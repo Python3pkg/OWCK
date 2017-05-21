@@ -17,7 +17,7 @@ from mpi4py import MPI
 from sklearn.cluster import KMeans
 from sklearn.mixture import GMM
 import skfuzzy as fuzz
-from flame import flame
+from .flame import flame
 
 from pandas import DataFrame
 
@@ -114,14 +114,14 @@ class OWCK(GaussianProcess):
             self.cluster_label = clusterer.labels_
             self.clusterer = clusterer
         elif self.cluster_method == 'tree':
-            print "Warning: specified clustering count might be overwritten"
+            print("Warning: specified clustering count might be overwritten")
             minsamples = int(len(X)/(self.n_cluster+1))
             tree = DecisionTreeRegressor(random_state=0,min_samples_leaf=minsamples)
             tree.fit(X,y)
             labels = tree.apply(X)
             clusters = np.unique(labels)
             k = len(clusters)
-            print "leafs:",k
+            print("leafs:",k)
             self.n_cluster = k
             self.leaf_labels = np.unique(labels)
             self.cluster_label = labels
@@ -129,7 +129,7 @@ class OWCK(GaussianProcess):
         elif self.cluster_method == 'random':
             r = self.n_sample % self.n_cluster
             m = (self.n_sample - r) / self.n_cluster
-            self.cluster_label = array(range(self.n_cluster) * m + range(r))
+            self.cluster_label = array(list(range(self.n_cluster)) * m + list(range(r)))
             self.clusterer = None
             shuffle(self.cluster_label)
         elif self.cluster_method == 'GMM':    #GMM from sklearn
@@ -145,7 +145,7 @@ class OWCK(GaussianProcess):
             self.cluster_label = np.argmax(u, axis=0)
             self.cluster_label = np.array(self.cluster_label)
         elif self.cluster_method == 'flame':  #Flame clustering, files are attached
-            print "Warning: specified clustering count will be overwritten with Flame"
+            print("Warning: specified clustering count will be overwritten with Flame")
             flameobject = flame.Flame_New()
             tempdata  = X.astype(np.float32)
             N = len(tempdata)
@@ -156,7 +156,7 @@ class OWCK(GaussianProcess):
             #print "done, found ", cso_count, " clusters"
             k = cso_count+1 #!!! overwrite k here
             self.n_cluster = k
-            print "clusters:",k
+            print("clusters:",k)
             flame.Flame_LocalApproximation( flameobject, 500, 1e-6 )
             self.cluster_labels_proba = flame.Print_Clusters(flameobject, (cso_count+1)*N )
             flame.Flame_Clear(flameobject)
@@ -264,7 +264,7 @@ class OWCK(GaussianProcess):
             
             for i in range(self.n_cluster):
                 if self.verbose:
-                    print "fitting model ", i+1
+                    print("fitting model ", i+1)
                     
                
                 if (self.cluster_method=='k-mean' or self.cluster_method=='random'):
@@ -299,8 +299,8 @@ class OWCK(GaussianProcess):
                         break
                     except ValueError:
                         if self.verbose:
-                            print 'Current nugget setting is too small!' +\
-                                ' It will be tuned up automatically'
+                            print('Current nugget setting is too small!' +\
+                                ' It will be tuned up automatically')
                         model.nugget *= 10
     
     def __mse_upper_bound(self, model):
@@ -355,7 +355,7 @@ class OWCK(GaussianProcess):
             self.cluster_label = labels
             for i in rebuildmodels:
                 if self.verbose:
-                    print "updating model",i
+                    print("updating model",i)
                 idx = self.cluster_label == self.leaf_labels[i]
                 model = self.models[i]
                 while True:  
@@ -366,8 +366,8 @@ class OWCK(GaussianProcess):
                         break
                     except ValueError:
                         if self.verbose:
-                            print 'Current nugget setting is too small!' +\
-                                ' It will be tuned up automatically'
+                            print('Current nugget setting is too small!' +\
+                                ' It will be tuned up automatically')
                         model.nugget *= 10
         else:
             #rebuild all models

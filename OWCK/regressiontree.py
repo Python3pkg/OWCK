@@ -1,6 +1,6 @@
 # Author: Bas van Stein <bas9112@gmail.com>
 # 
-from __future__ import print_function
+
 import numpy as np
 
 # Regression tree class in python.
@@ -201,7 +201,7 @@ class IncrementalRegressionTree:
 	def printtree__string(self,node, depth=0):
 		str = ""
 		if isinstance(node, dict): #always
-			if ('val' in node.keys()):
+			if ('val' in list(node.keys())):
 				str +=('|%s[%s, id=%s]' % ((depth*' ', node['val'], node['id'])))
 			else:
 				str += ('|%s[X%d < %.3f]' % ((depth*'-', (node['index']+1), node['value'])))+"\n"
@@ -224,12 +224,12 @@ class IncrementalRegressionTree:
 
 	def _predict_rec(self,node, row):
 		if row[node['index']] < node['value']:
-			if ('val' not in node['left'].keys() ):
+			if ('val' not in list(node['left'].keys()) ):
 				return self._predict_rec(node['left'], row)
 			else:
 				return node['left']['val']
 		else:
-			if ('val' not in node['right'].keys() ):
+			if ('val' not in list(node['right'].keys()) ):
 				return self._predict_rec(node['right'], row)
 			else:
 				return node['right']['val']
@@ -244,12 +244,12 @@ class IncrementalRegressionTree:
 
 	def _apply_rec(self,node, row):
 		if row[node['index']] < node['value']:
-			if ('val' not in node['left'].keys() ):
+			if ('val' not in list(node['left'].keys()) ):
 				return self._apply_rec(node['left'], row)
 			else:
 				return node['left']['id']
 		else:
-			if ('val' not in node['right'].keys() ):
+			if ('val' not in list(node['right'].keys()) ):
 				return self._apply_rec(node['right'], row)
 			else:
 				return node['right']['id']
@@ -267,11 +267,11 @@ class IncrementalRegressionTree:
 
 	def __find_terminal_parent(self,node, node_id):
 		if isinstance(node, dict): #should be always
-			if ('val' in node.keys()):
+			if ('val' in list(node.keys())):
 				return None,None
-			elif (isinstance(node['left'],dict) and 'val' in node['left'].keys() and node['left']['id'] == node_id):
+			elif (isinstance(node['left'],dict) and 'val' in list(node['left'].keys()) and node['left']['id'] == node_id):
 				return node,"left"
-			elif (isinstance(node['right'],dict) and 'val' in node['right'].keys() and node['right']['id'] == node_id):
+			elif (isinstance(node['right'],dict) and 'val' in list(node['right'].keys()) and node['right']['id'] == node_id):
 				return node,"right"
 			else:
 				#first check left subtree

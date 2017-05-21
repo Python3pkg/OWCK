@@ -50,7 +50,7 @@ def ackley_arg0(sol):
     X,Y = sol[0], sol[1]
     Z = np.zeros(X.shape)
     
-    for i in xrange(X.shape[0]):
+    for i in range(X.shape[0]):
         Z[i] = benchmarks.rastrigin((X[i],Y[i]))[0]
     return Z
 
@@ -140,7 +140,7 @@ def runtest(cluster_method='k-mean'):
         predictions = owck_model.predict(d.data[test_index])
         predictions = np.array(predictions).reshape(-1, 1)
         score = r2_score(d.target[test_index], predictions)
-        print cluster_method,"R2 score:", score
+        print(cluster_method,"R2 score:", score)
 
 
  
@@ -149,4 +149,4 @@ for method in [ 'tree', 'k-mean','random','OK']:
     import time
     start = time.time()
     runtest(method)
-    print "| METHOD",method,"DONE IN",time.time() - start
+    print("| METHOD",method,"DONE IN",time.time() - start)

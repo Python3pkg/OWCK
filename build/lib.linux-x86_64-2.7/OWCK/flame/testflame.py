@@ -1,6 +1,6 @@
 #test flame
 import ctypes
-import flame
+from . import flame
 import numpy as np
 import numpy.ctypeslib as npct
 
@@ -19,26 +19,26 @@ M = len(data[0])
 #print data
 #print float_array
 
-print data.shape
+print(data.shape)
 flameobject = flame.Flame_New()
 flame.Flame_SetDataMatrix( flameobject, data,  0 )
 
-print "Detecting Cluster Supporting Objects ..."
+print("Detecting Cluster Supporting Objects ...")
 
 flame.Flame_DefineSupports( flameobject, 10, -2.0 )
 
 cso_count = flameobject.cso_count 
-print "done, found ", cso_count
+print("done, found ", cso_count)
 
-print "Propagating fuzzy memberships ... " 
+print("Propagating fuzzy memberships ... ") 
 
 flame.Flame_LocalApproximation( flameobject, 500, 1e-6 )
 
 cso_count = flameobject.cso_count 
-print "done, found ", cso_count
-print "done"
+print("done, found ", cso_count)
+print("done")
 
-print "Defining clusters from fuzzy memberships ... " 
+print("Defining clusters from fuzzy memberships ... ") 
 
 flame.Flame_MakeClusters( flameobject, -1.0 )
 #print "done"
@@ -46,7 +46,7 @@ flame.Flame_MakeClusters( flameobject, -1.0 )
 fyzzyzooi = flame.Print_Clusters(flameobject, (cso_count+1)*N )
 flame.Flame_Clear(flameobject)
 fyzzyzooi = fyzzyzooi.reshape(( N,cso_count+1 ))
-print fyzzyzooi
+print(fyzzyzooi)
 exit()
 
 #todo fix it later

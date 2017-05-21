@@ -19,7 +19,7 @@ def ackley_arg0(sol):
     X,Y = sol[0], sol[1]
     Z = np.zeros(X.shape)
     
-    for i in xrange(X.shape[0]):
+    for i in range(X.shape[0]):
         Z[i] = benchmarks.rastrigin((X[i],Y[i]))[0]
     return Z
 
@@ -69,7 +69,7 @@ def runtest(cluster_method='k-mean'):
         
         seed += 1
         
-        print "FOLD: ", seed
+        print("FOLD: ", seed)
 
         time_run_start = time.time()
 
@@ -83,16 +83,16 @@ def runtest(cluster_method='k-mean'):
         owck_model.updateModel(X_update,Y_update)
 
         time_run = time.time() - time_run_start
-        sys.stderr.write("--- Fitting finished in "+`time_run`+" ---\n" )
+        sys.stderr.write("--- Fitting finished in "+repr(time_run)+" ---\n" )
         
         time_left = time_run * (seed_times-seed-1)
         time_left_hour = int(time_left / 3600)
         time_left_minute = int((time_left - 3600*time_left_hour)/60)
-        sys.stderr.write("--- Aproximate time left (HH:MM): "+`time_left_hour`+":"+`time_left_minute`+" ---\n" )
+        sys.stderr.write("--- Aproximate time left (HH:MM): "+repr(time_left_hour)+":"+repr(time_left_minute)+" ---\n" )
 
         predictions, variance = owck_model.predict(d.data[test_index])
         score = r2_score(d.target[test_index], predictions)
-        print cluster_method,"R2 score:", score
+        print(cluster_method,"R2 score:", score)
 
 for method in ['tree','k-mean', 'GMM', 'fuzzy-c-mean', 'flame', 'random']:
     runtest(method)

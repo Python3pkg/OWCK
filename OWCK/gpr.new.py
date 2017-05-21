@@ -4,7 +4,7 @@
 #         Bas van Stein <bas9112@gmail.com>
 
 
-from __future__ import print_function
+
 
 import pdb
 import numpy as np
@@ -22,6 +22,7 @@ from sklearn.utils.validation import check_is_fitted
 
 import math
 import warnings
+import collections
 
 
 """
@@ -1138,7 +1139,7 @@ class GaussianProcess(BaseEstimator, RegressorMixin):
                 + 2. * np.log(np.diag(L)).sum() + np.dot(rho.T, rho))
             
             L = L / sigma2_total
-            Ft, Yt, rho = map(lambda x: x*sigma2_total, [Ft, Yt, rho]) 
+            Ft, Yt, rho = [x*sigma2_total for x in [Ft, Yt, rho]] 
             Q, G = Q * sd_total, G * sd_total
         
         sigma2 *= self.y_std ** 2.
@@ -1422,13 +1423,13 @@ class GaussianProcess(BaseEstimator, RegressorMixin):
     def _check_params(self, n_samples=None):
 
         # Check regression model
-        if not callable(self.regr):
+        if not isinstance(self.regr, collections.Callable):
             if self.regr in self._regression_types:
                 self.regr = self._regression_types[self.regr]
             else:
                 raise ValueError("regr should be one of %s or callable, "
                                  "%s was given."
-                                 % (self._regression_types.keys(), self.regr))
+                                 % (list(self._regression_types.keys()), self.regr))
 
         # Check regression weights if given (Ordinary Kriging)
         if self.beta0 is not None:
@@ -1438,13 +1439,13 @@ class GaussianProcess(BaseEstimator, RegressorMixin):
                 self.beta0 = self.beta0.T
 
         # Check correlation model
-        if not callable(self.corr):
+        if not isinstance(self.corr, collections.Callable):
             if self.corr in self._correlation_types:
                 self.corr = self._correlation_types[self.corr]
             else:
                 raise ValueError("corr should be one of %s or callable, "
                                  "%s was given."
-                                 % (self._correlation_types.keys(), self.corr))
+                                 % (list(self._correlation_types.keys()), self.corr))
 
         # Check correlation parameters
         self.theta0 = np.atleast_2d(self.theta0)

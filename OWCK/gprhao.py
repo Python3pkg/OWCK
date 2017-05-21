@@ -177,7 +177,7 @@ class GaussianProcess_extra(GaussianProcess):
                 elif self.corr_type == 'linear':
                     pass
             except Warning:
-                print D
+                print(D)
                 grad = np.zeros((n_features, n_samples))
         
         return grad

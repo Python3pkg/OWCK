@@ -149,7 +149,7 @@ class OWCK(GaussianProcess_extra):
             clusters = np.unique(labels)
             k = len(clusters)
             if self.verbose:
-                print ("leafs:",k)
+                print(("leafs:",k))
             self.n_cluster = k
             self.leaf_labels = np.unique(labels)
             self.cluster_label = labels
@@ -158,7 +158,7 @@ class OWCK(GaussianProcess_extra):
         elif self.cluster_method == 'random':
             r = self.n_sample % self.n_cluster
             m = (self.n_sample - r) / self.n_cluster
-            self.cluster_label = array(range(self.n_cluster) * m + range(r))
+            self.cluster_label = array(list(range(self.n_cluster)) * m + list(range(r)))
             self.clusterer = None
             shuffle(self.cluster_label)
         elif self.cluster_method == 'GMM':    #GMM from sklearn
@@ -223,7 +223,7 @@ class OWCK(GaussianProcess_extra):
             elif (self.cluster_method=='tree'):
                 idx = [self.cluster_label == self.leaf_labels[i] for i in range(self.n_cluster)]
                 if (self.verbose):
-                    print "len cluster", len(idx)
+                    print("len cluster", len(idx))
             else:
                 targetMemberSize = (len(self.X) / self.n_cluster)*(1.0+self.overlap)
                 idx = []
@@ -240,7 +240,7 @@ class OWCK(GaussianProcess_extra):
 
 
             training = [(X[index, :], y[index]) for index in idx]
-            training_set = itertools.izip(range(self.n_cluster),deepcopy(self.models),training )
+            training_set = zip(list(range(self.n_cluster)),deepcopy(self.models),training )
             
             pool = Pool(self.n_cluster) 
             models = pool.map(train_modelstar, training_set)
@@ -275,7 +275,7 @@ class OWCK(GaussianProcess_extra):
                         # super is needed here to call the 'fit' function in the 
                         # parent class (GaussianProcess_extra)
                         if (self.cluster_method=='tree' and self.verbose):
-                            print 'leaf: ', self.leaf_labels[i]
+                            print('leaf: ', self.leaf_labels[i])
                         length_lb = 1e-10
                         length_ub = 1e2
                         X = self.X[idx, :]
@@ -286,10 +286,10 @@ class OWCK(GaussianProcess_extra):
                         model.fit(self.X[idx, :], self.y[idx])
                         break
                     except Exception as e:
-                        print e
+                        print(e)
                         if self.verbose:
-                            print('Current nugget setting is too small!' +\
-                                ' It will be tuned up automatically')
+                            print(('Current nugget setting is too small!' +\
+                                ' It will be tuned up automatically'))
                         #pdb.set_trace()
                         model.nugget *= 10
     
@@ -321,7 +321,7 @@ class OWCK(GaussianProcess_extra):
             normalized_mse = par['mse_normalized'].reshape(-1, 1) 
             U = par['U'].reshape(-1, 1)
 
-            y_jac, mse_jac = zip(*[model.gradient(x) for model in self.models])
+            y_jac, mse_jac = list(zip(*[model.gradient(x) for model in self.models]))
             y_jac, mse_jac = np.c_[y_jac], np.c_[mse_jac]
 
             M = (1.  / normalized_mse).sum()
@@ -461,7 +461,7 @@ class OWCK(GaussianProcess_extra):
                     #check size of model
                     if (len(idx) > self.minsamples*2.0):
                         if self.verbose:
-                            print("Trying to split leaf node",i)
+                            print(("Trying to split leaf node",i))
                         #split the leaf and fit 2 additional models
                         new_labels = []
                         if self.clusterer.split_terminal(i,self.X[idx, :], self.y[idx]):
@@ -474,7 +474,7 @@ class OWCK(GaussianProcess_extra):
                                 delete_old = True
                                 new_leafindex = np.where(new_labels==n)[0][0]
                                 if self.verbose:
-                                    print("New model with id",new_leafindex)
+                                    print(("New model with id",new_leafindex))
                                     #print self.leaf_labels
                                 new_model = deepcopy(self.empty_model)
                                 self.models.append(new_model)
@@ -505,7 +505,7 @@ class OWCK(GaussianProcess_extra):
                     
                     idx = self.cluster_label == self.leaf_labels[i]
                     if self.verbose:
-                        print("updating model on position "+str(i)+" attached to leaf id "+str(self.leaf_labels[i])+" and "+str(sum(idx))+" data points")
+                        print(("updating model on position "+str(i)+" attached to leaf id "+str(self.leaf_labels[i])+" and "+str(sum(idx))+" data points"))
                     model = self.models[i]
                     while True:  
                         try:
@@ -516,8 +516,8 @@ class OWCK(GaussianProcess_extra):
                             break
                         except ValueError:
                             if self.verbose:
-                                print('Current nugget setting is too small!' +\
-                                    ' It will be tuned up automatically')
+                                print(('Current nugget setting is too small!' +\
+                                    ' It will be tuned up automatically'))
                             model.nugget *= 10
             else:
                 rebuildmodels = np.unique(self.clusterer.apply(newX))
@@ -531,7 +531,7 @@ class OWCK(GaussianProcess_extra):
                     idx = [self.cluster_label == self.leaf_labels[i] for i in rebuildmodels]
                     modelstosend = [deepcopy(self.models[i]) for i in rebuildmodels]
                     training = [(self.X[index, :], self.y[index]) for index in idx]
-                    training_set = itertools.izip(rebuildmodels,modelstosend,training )
+                    training_set = zip(rebuildmodels,modelstosend,training )
                     
                     pool = Pool(self.n_cluster) 
                     models = pool.map(train_modelstar, training_set)
@@ -545,7 +545,7 @@ class OWCK(GaussianProcess_extra):
 
                     for i in rebuildmodels:
                         if self.verbose:
-                            print("updating model "+str(i))
+                            print(("updating model "+str(i)))
                         idx = self.cluster_label == self.leaf_labels[i]
                         model = self.models[i]
                         while True:  
@@ -557,8 +557,8 @@ class OWCK(GaussianProcess_extra):
                                 break
                             except ValueError:
                                 if self.verbose:
-                                    print('Current nugget setting is too small!' +\
-                                        ' It will be tuned up automatically')
+                                    print(('Current nugget setting is too small!' +\
+                                        ' It will be tuned up automatically'))
                                 model.nugget *= 10
         else:
             #rebuild all models
